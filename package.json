@@ -1,0 +1,16 @@
+{
+  "name": "egg-recognition",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "standard"
+  },
+  "author": "Atte Tarvainen",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "standard": "^12.0.1"
+  }
+}
