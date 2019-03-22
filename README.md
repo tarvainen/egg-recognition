@@ -10,17 +10,22 @@ This is a egg recognition tool for find out count of eggs in hen house.
 
 ### Usage
 
+Running the container will start the server to http://localhost:8080
+
 ```
 docker build -t egg-recognition .
-docker run --rm -v $(pwd):/app egg-recognition [path to the image]
-
-# will print something like
-
-[ { type: 'chicken', looksLike: 'person', sure: true },
-  { type: 'egg', looksLike: 'frisbee', sure: true },
-  { type: 'egg', looksLike: 'sports ball', sure: true },
-  { type: 'egg', looksLike: 'sports ball', sure: true } ]
+docker run --rm -v $(pwd):/app -p 8080:8080 egg-recognition
 ```
+
+To send the image to be processed, use for example command below
+
+```
+curl --request POST \
+     --url http://localhost:8080/rest/analyze \
+     --form file=@$(pwd)/img/eggs1.jpg
+```
+
+API documentation is available at http://localhost:8080/api/doc
 
 # License
 
