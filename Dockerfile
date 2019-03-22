@@ -2,6 +2,6 @@ FROM justadudewhohacks/opencv-nodejs
 
 WORKDIR /app
 
-COPY . . 
+COPY . .
 
-ENTRYPOINT ["node", "index.js"]
+ENTRYPOINT ["npm", "start"]
