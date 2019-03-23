@@ -27,6 +27,8 @@ curl --request POST \
 
 API documentation is available at http://localhost:8080/api/doc
 
+You can test it in practise by navigating to http://localhost:8080. Upload your own image and click "Analyze". Soon there should be some eggs detected.
+
 # License
 
 MIT
