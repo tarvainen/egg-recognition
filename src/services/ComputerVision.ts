@@ -1,6 +1,7 @@
 import { Service } from '@tsed/di'
 import * as path from 'path'
 import classNames from '../util/classNames'
+import Item from '../models/Item'
 const cv = require('/usr/lib/node_modules/opencv4nodejs')
 
 @Service()
@@ -24,26 +25,15 @@ export default class ComputerVision {
     this.net = this.createNet()
   }
 
-  analyze (filename: string): any {
+  analyze (filename: string): Array<Item> {
     const fullPath = path.join(this.filePath, filename)
 
     const img = cv.imread(fullPath)
 
     const blob = this.process(img)
 
-    const objects = this.extract(blob)
-      .map(result => ({ ...result, className: classNames[result.classLabel] }))
-      .filter((result: any): boolean => !!this.classMappings[result.className])
-
-    const output = objects.map(
-      (item: any) => ({
-        type: this.classMappings[item.className],
-        looksLike: item.className,
-        sure: item.confidence > this.requiredConfidence
-      })
-    )
-
-    return output.filter((o: any): boolean => o.sure)
+    return this.extract(blob)
+      .filter((item: Item) => item.confidence >= this.requiredConfidence)
   }
 
   private process (img: any) {
@@ -62,16 +52,16 @@ export default class ComputerVision {
     return outputBlob
   }
 
-  private extract (blob: any) {
+  private extract (blob: any): Array<Item> {
     return Array(blob.rows).fill(0)
     .map((res, i) => {
       const classLabel = blob.at(i, 1)
       const confidence = blob.at(i, 2)
 
       return ({
-        classLabel,
-        confidence
-      })
+        confidence,
+        type: this.classMappings[classNames[classLabel]]
+      }) as Item
     })
   }
 
