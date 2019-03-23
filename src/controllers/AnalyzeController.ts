@@ -1,11 +1,11 @@
 import { Controller, Post } from '@tsed/common'
-import { ImageAnalyzer } from '../services/ImageAnalyzer'
 import { MultipartFile, MulterOptions } from '@tsed/multipartfiles'
 import { Exception } from 'ts-httpexceptions'
+import ComputerVision from '../services/ComputerVision'
 
 @Controller('/analyze')
 export class AnalyzeController {
-  constructor (private analyzer: ImageAnalyzer) {}
+  constructor (private cv: ComputerVision) {}
 
   @Post('/')
   @MulterOptions({ dest: `${process.cwd()}/.tmp` })
@@ -14,6 +14,6 @@ export class AnalyzeController {
       throw new Exception(400, 'Input file missing')
     }
 
-    return this.analyzer.analyze(file.filename)
+    return this.cv.analyze(file.filename)
   }
 }
