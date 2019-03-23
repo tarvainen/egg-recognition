@@ -2,6 +2,7 @@ import { Service } from '@tsed/di'
 import * as path from 'path'
 import classNames from '../util/classNames'
 import Item from '../models/Item'
+import Position from '../models/Position'
 const cv = require('/usr/lib/node_modules/opencv4nodejs')
 
 @Service()
@@ -32,7 +33,7 @@ export default class ComputerVision {
 
     const blob = this.process(img)
 
-    return this.extract(blob)
+    return this.extract(blob, img)
       .filter((item: Item) => item.confidence >= this.requiredConfidence)
   }
 
@@ -52,15 +53,32 @@ export default class ComputerVision {
     return outputBlob
   }
 
-  private extract (blob: any): Array<Item> {
+  private extract (blob: any, img: any): Array<Item> {
     return Array(blob.rows).fill(0)
     .map((res, i) => {
       const classLabel = blob.at(i, 1)
       const confidence = blob.at(i, 2)
 
+      const bottomLeft = new cv.Point(
+        blob.at(i, 3) * img.cols,
+        blob.at(i, 6) * img.rows
+      )
+
+      const topRight = new cv.Point(
+        blob.at(i, 5) * img.cols,
+        blob.at(i, 4) * img.rows
+      )
+
+      const x = bottomLeft.x
+      const y = topRight.y
+      const width = topRight.x - bottomLeft.x
+      const height = bottomLeft.y - topRight.y
+
       return ({
         confidence,
-        type: this.classMappings[classNames[classLabel]]
+        type: this.classMappings[classNames[classLabel]],
+        position: { x, y },
+        size: { width, height }
       }) as Item
     })
   }

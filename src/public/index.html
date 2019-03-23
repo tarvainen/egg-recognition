@@ -1,0 +1,82 @@
+<html>
+  <head>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      #container {
+        position: relative;
+      }
+
+      .item {
+        border: 5px solid rgba(255, 255, 255, 0.8);
+        border-radius: 2px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <form name="form" onsubmit="submitForm(); return false;">
+      <input type="file" name="file" />
+      <input type="submit" value="Analyze" />
+    </form>
+
+    <div id="container"></div>
+  </body>
+
+  <script type="text/javascript">
+    const container = document.querySelector('#container');
+
+    async function submitForm (e) {
+      const { form } = document.forms;
+
+      const [file] = form.file.files;
+
+      displayImage(file);
+
+      const specs = await analyzeImage(file);
+
+      makeGuides(specs);
+    }
+
+    function displayImage (file) {
+      var reader  = new FileReader();
+
+      reader.onload = function (e)  {
+          var image = document.createElement('img');
+          image.src = e.target.result;
+          container.innerHTML = '';
+          container.appendChild(image);
+      }
+
+      reader.readAsDataURL(file);
+    }
+
+    async function analyzeImage (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      return fetch(
+        'http://localhost:8080/rest/analyze',
+        { method: 'POST', body: formData }
+      ).then(res => res.json());
+    }
+
+    function makeGuides (specs) {
+      specs.forEach(({ position: { x, y }, size: { width, height }}) => {
+        const div = document.createElement('div');
+
+        div.style.position = 'absolute';
+        div.style.top = y + 'px';
+        div.style.left = x + 'px';
+        div.style.width = width + 'px';
+        div.style.height = height + 'px';
+
+        div.className = 'item';
+
+        container.appendChild(div);
+      });
+    }
+  </script>
+</html>

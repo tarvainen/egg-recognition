@@ -9,7 +9,6 @@ import '@tsed/multipartfiles'
 @ServerSettings({
   rootDir: Path.resolve(__dirname),
   acceptMimes: ['application/json', 'multipart/form-data'],
-
   ajv: {
     errorFormat: (error: any) => `${error.modelName}${error.dataPath} ${error.message}`,
     options: { verbose: true }
@@ -18,7 +17,10 @@ import '@tsed/multipartfiles'
     {
       path: '/api/doc'
     }
-  ]
+  ],
+  statics: {
+    '/': `${__dirname}/public`
+  }
 })
 export class Server extends ServerLoader {
   public $onMountingMiddlewares (): void | Promise<any> {
